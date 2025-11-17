@@ -1,5 +1,53 @@
 {
   "users": {},
   "orders": [],
-  "games": []
+  "games": [],
+  "bets": [],
+  "leaderboard": {},
+  "statistics": {
+    "totalGames": 0,
+    "totalBets": 0,
+    "totalCoinsWagered": 0,
+    "totalTournaments": 0,
+    "activePlayers": 0,
+    "dailyActivePlayers": {},
+    "hourlyGames": {},
+    "popularBetAmounts": {}
+  },
+  "achievements": {
+    "globalUnlocks": {},
+    "rarityDistribution": {
+      "common": 0,
+      "uncommon": 0,
+      "rare": 0,
+      "epic": 0,
+      "legendary": 0
+    }
+  },
+  "tournaments": {
+    "active": [],
+    "completed": [],
+    "totalPrizePool": 0
+  },
+  "system": {
+    "lastBackup": null,
+    "uptime": 0,
+    "version": "2.0.0",
+    "maintenanceMode": false,
+    "featureFlags": {
+      "multiplayer": true,
+      "tournaments": true,
+      "achievements": true,
+      "betting": true
+    }
+  },
+  "cache": {
+    "leaderboardCache": {
+      "timestamp": null,
+      "data": null,
+      "ttl": 300000
+    },
+    "userStatsCache": {},
+    "tournamentCache": {}
+  }
 }
