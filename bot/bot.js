@@ -1,7 +1,7 @@
 const { Telegraf } = require('telegraf');
 const fs = require('fs');
 
-const bot = new Telegraf('8278879171:AAHIurrSFNEjuuwh3GRyofKSYja821vVwUc');
+const bot = new Telegraf(process.env.BOT_TOKEN || '8278879171:AAHIurrSFNEjuuwh3GRyofKSYja821vVwUc');
 let data = { users: {}, orders: [], games: [] };
 
 // Load/save data
@@ -189,3 +189,4 @@ console.log('✅ Bot started successfully!');
 // Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
+
