@@ -512,3 +512,90 @@ window.addEventListener('resize', resizeCanvas);
 // Initialize the game
 setupMobileControls();
 gameLoop();
+ // Add to game/game.js
+
+const POWER_UPS = {
+    shield: {
+        name: 'Shield',
+        color: '#3498db',
+        duration: 4,
+        effect: (player) => {
+            player.shield = true;
+            player.shieldTime = 4;
+        }
+    },
+    speed: {
+        name: 'Speed Boost',
+        color: '#2ecc71', 
+        duration: 6,
+        effect: (player) => {
+            player.speedBoost = true;
+            player.speedTime = 6;
+            player.originalSpeed = 5;
+            player.speed = 8;
+        }
+    },
+    multiGear: {
+        name: 'Multi-Gear',
+        color: '#e74c3c',
+        duration: 8,
+        effect: (player) => {
+            player.multiGear = true;
+            player.multiGearTime = 8;
+        }
+    }
+};
+
+// Enhanced power-up spawning
+function spawnPowerUp() {
+    if (Math.random() < 0.008 && state.powerUps.length < 4) {
+        const types = ['gear', 'heart', 'shield', 'speed', 'multiGear'];
+        const weights = [0.4, 0.3, 0.1, 0.1, 0.1]; // Probabilities
+        
+        let random = Math.random();
+        let type = 'gear'; // default
+        
+        for (let i = 0; i < weights.length; i++) {
+            random -= weights[i];
+            if (random <= 0) {
+                type = types[i];
+                break;
+            }
+        }
+        
+        state.powerUps.push({
+            x: Math.random() * (canvas.width - 40) + 20,
+            y: Math.random() * (canvas.height - 40) + 20,
+            type: type,
+            radius: type === 'gear' ? 15 : 12
+        });
+    }
+}
+
+// Enhanced power-up collection
+function collectPowerUp(player, powerUp) {
+    switch (powerUp.type) {
+        case 'gear':
+            player.gear = true;
+            player.gearTime = 5;
+            break;
+        case 'heart':
+            player.health = Math.min(5, player.health + 1);
+            break;
+        case 'shield':
+            player.shield = true;
+            player.shieldTime = 4;
+            break;
+        case 'speed':
+            player.speedBoost = true;
+            player.speedTime = 6;
+            player.originalSpeed = 5;
+            player.speed = 8;
+            break;
+        case 'multiGear':
+            player.multiGear = true;
+            player.multiGearTime = 8;
+            break;
+    }
+    spawnParticles(powerUp.x, powerUp.y, getPowerUpColor(powerUp.type));
+} 
