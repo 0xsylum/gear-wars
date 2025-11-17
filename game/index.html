@@ -141,6 +141,32 @@
   </div>
 
   <script>
+
+    // Add this at the top of your game script in index.html
+const tg = window.Telegram.WebApp;
+
+// WebSocket connection for multiplayer
+function initializeWebSocket() {
+    const isProduction = window.location.hostname !== 'localhost';
+    const wsUrl = isProduction ? 'wss://gear-wars.onrender.com' : 'ws://localhost:10000';
+    
+    console.log('🔗 Connecting to WebSocket:', wsUrl);
+    
+    // Your WebSocket connection logic here
+}
+
+// Check if we're in Telegram Web App
+if (tg.initData) {
+    console.log('✅ Running in Telegram Web App');
+    tg.expand();
+    tg.ready();
+    
+    // Initialize game with Telegram user data
+    initializeGameWithTelegramUser();
+} else {
+    console.log('🌐 Running in standalone browser');
+    initializeGameStandalone();
+}
     const tg = window.Telegram.WebApp;
     tg.expand(); tg.ready();
 
@@ -232,3 +258,4 @@
   <script src="multiplayer.js"></script>
 </body>
 </html>
+
