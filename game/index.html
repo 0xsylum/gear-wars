@@ -142,8 +142,16 @@
 
   <script>
 
-    // Add this at the top of your game script in index.html
-const tg = window.Telegram.WebApp;
+// Telegram Web App initialization
+const tg = window.Telegram?.WebApp || {};
+
+// Safe initialization
+if (tg && tg.expand) {
+    tg.expand();
+    tg.ready();
+} else {
+    console.log('🌐 Running in standalone mode');
+}
 
 // WebSocket connection for multiplayer
 function initializeWebSocket() {
@@ -167,7 +175,16 @@ if (tg.initData) {
     console.log('🌐 Running in standalone browser');
     initializeGameStandalone();
 }
-    const tg = window.Telegram.WebApp;
+    // Telegram Web App initialization
+const tg = window.Telegram?.WebApp || {};
+
+// Safe initialization
+if (tg && tg.expand) {
+    tg.expand();
+    tg.ready();
+} else {
+    console.log('🌐 Running in standalone mode');
+}
     tg.expand(); tg.ready();
 
     const canvas = document.getElementById('gameCanvas');
@@ -258,4 +275,5 @@ if (tg.initData) {
   <script src="multiplayer.js"></script>
 </body>
 </html>
+
 
