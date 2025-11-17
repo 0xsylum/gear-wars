@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gear Wars - Battle Arena</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- Game UI -->
+        <div id="ui">
+            <div class="ui-item">
+                <span class="icon">❤️</span>
+                <span id="health">5</span>
+            </div>
+            <div class="ui-item">
+                <span class="icon">⏱️</span>
+                <span id="time">60</span>s
+            </div>
+            <div class="ui-item">
+                <span class="icon">⚙️</span>
+                <span id="gear">NO</span>
+            </div>
+        </div>
+        
+        <!-- Mobile Controls -->
+        <div id="mobileControls">
+            <div class="control-row">
+                <button class="control-btn" id="up">⬆️</button>
+            </div>
+            <div class="control-row">
+                <button class="control-btn" id="left">⬅️</button>
+                <button class="control-btn" id="down">⬇️</button>
+                <button class="control-btn" id="right">➡️</button>
+            </div>
+        </div>
+        
+        <!-- Control Hint -->
+        <div id="controlsHint">
+            <small>PC: Arrow Keys | Mobile: Touch Buttons</small>
+        </div>
+        
+        <!-- Start Screen -->
+        <div id="startScreen" class="screen">
+            <h1>🎮 GEAR WARS</h1>
+            <p>Battle Arena</p>
+            <button id="startBtn">START BATTLE</button>
+            <div class="instructions">
+                <p>🎯 Collect <strong>GEARS</strong> to attack</p>
+                <p>❤️ Collect <strong>HEARTS</strong> to heal</p>
+                <p>⚔️ Destroy your opponent!</p>
+            </div>
+        </div>
+        
+        <!-- Game Over Screen -->
+        <div id="gameOverScreen" class="screen hidden">
+            <h1 id="resultTitle">VICTORY!</h1>
+            <p id="resultMessage">You defeated the enemy!</p>
+            <button id="restartBtn">PLAY AGAIN</button>
+            <button id="menuBtn">MAIN MENU</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
