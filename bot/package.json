@@ -1,16 +1,16 @@
 {
   "name": "gear-wars-bot",
-  "version": "1.0.0",
-  "description": "Telegram bot for Gear Wars battle arena",
+  "version": "2.0.0",
+  "description": "Advanced Telegram battle arena with multiplayer, betting, and tournaments",
   "main": "bot.js",
   "scripts": {
     "start": "node bot.js",
-    "dev": "node bot.js"
-  },
-  "dependencies": {
-    "telegraf": "^4.16.3",
-    "ws": "^8.14.2",
-    "uuid": "^9.0.1"
+    "dev": "node bot.js",
+    "test": "jest",
+    "lint": "eslint .",
+    "cleanup": "node scripts/cleanup.js",
+    "backup": "node scripts/backup.js",
+    "stats": "node scripts/stats.js"
   },
   "keywords": [
     "telegram",
@@ -19,8 +19,38 @@
     "battle",
     "arena",
     "multiplayer",
-    "wagering"
+    "websocket",
+    "betting",
+    "tournaments",
+    "achievements"
   ],
-  "author": "Your Name",
-  "license": "MIT"
+  "author": "0xsylum",
+  "license": "MIT",
+  "dependencies": {
+    "telegraf": "^4.16.3",
+    "ws": "^8.14.2",
+    "uuid": "^9.0.1",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "rate-limiter-flexible": "^4.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.56.0",
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/0xsylum/gear-wars.git"
+  },
+  "bugs": {
+    "url": "https://github.com/0xsylum/gear-wars/issues"
+  },
+  "homepage": "https://github.com/0xsylum/gear-wars#readme"
 }
