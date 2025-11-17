@@ -1,0 +1,22 @@
+{
+  "name": "gear-wars-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot for Gear Wars battle arena",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "node bot.js"
+  },
+  "dependencies": {
+    "telegraf": "^4.16.3"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "game",
+    "battle",
+    "arena"
+  ],
+  "author": "0xsylum",
+  "license": "MIT"
+}
