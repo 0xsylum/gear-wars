@@ -209,5 +209,174 @@ console.log('✅ Bot started successfully!');
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
+ // Add to bot/bot.js
+
+// Create bet command
+bot.action('create_bet', async (ctx) => {
+    const userId = ctx.from.id;
+    const user = data.users[userId];
+    
+    const betAmounts = [
+        { text: '💰 10 coins', amount: 10 },
+        { text: '💰 50 coins', amount: 50 },
+        { text: '💰 100 coins', amount: 100 },
+        { text: '💰 500 coins', amount: 500 }
+    ];
+    
+    ctx.reply('Select bet amount:', {
+        reply_markup: {
+            inline_keyboard: [
+                ...betAmounts.map(bet => [
+                    { text: bet.text, callback_data: `create_bet_${bet.amount}` }
+                ]),
+                [{ text: '🔙 Back', callback_data: 'main_menu' }]
+            ]
+        }
+    });
+});
+
+bot.action(/create_bet_(\d+)/, (ctx) => {
+    const amount = parseInt(ctx.match[1]);
+    const userId = ctx.from.id;
+    const user = data.users[userId];
+    
+    if (user.balance < amount) {
+        return ctx.reply('❌ Insufficient balance!');
+    }
+    
+    // Create bet
+    const betId = Date.now().toString();
+    const bet = {
+        id: betId,
+        userId: userId,
+        amount: amount,
+        createdAt: new Date(),
+        status: 'open'
+    };
+    
+    if (!data.bets) data.bets = [];
+    data.bets.push(bet);
+    
+    // Deduct amount from user
+    user.balance -= amount;
+    saveData();
+    
+    ctx.reply(
+        `✅ Bet created!\n\n` +
+        `Amount: ${amount} coins\n` +
+        `Bet ID: ${betId}\n\n` +
+        `Waiting for opponent...`,
+        {
+            reply_markup: {
+                inline_keyboard: [
+                    [{ text: '❌ Cancel Bet', callback_data: `cancel_bet_${betId}` }],
+                    [{ text: '🔙 Main Menu', callback_data: 'main_menu' }]
+                ]
+            }
+        }
+    );
+});
+
+// Bet order book
+bot.action('order_book', (ctx) => {
+    const openBets = (data.bets || []).filter(bet => bet.status === 'open');
+    
+    if (openBets.length === 0) {
+        return ctx.reply('📊 No open bets available. Create one first!');
+    }
+    
+    const betButtons = openBets.map(bet => {
+        const user = data.users[bet.userId];
+        return [{
+            text: `💰 ${bet.amount} coins (${user.wins}W/${user.losses}L)`,
+            callback_data: `join_bet_${bet.id}`
+        }];
+    });
+    
+    ctx.reply('📊 Open Bets:', {
+        reply_markup: {
+            inline_keyboard: [
+                ...betButtons,
+                [{ text: '🔙 Back', callback_data: 'main_menu' }]
+            ]
+        }
+    });
+});
+
+bot.action(/join_bet_(.+)/, (ctx) => {
+    const betId = ctx.match[1];
+    const userId = ctx.from.id;
+    const user = data.users[userId];
+    const bet = (data.bets || []).find(b => b.id === betId);
+    
+    if (!bet) {
+        return ctx.reply('❌ Bet not found!');
+    }
+    
+    if (user.balance < bet.amount) {
+        return ctx.reply('❌ Insufficient balance to join this bet!');
+    }
+    
+    if (bet.userId === userId) {
+        return ctx.reply('❌ Cannot join your own bet!');
+    }
+    
+    // Create game
+    const gameId = Date.now().toString();
+    const game = {
+        id: gameId,
+        player1: bet.userId,
+        player2: userId,
+        betAmount: bet.amount,
+        status: 'active',
+        createdAt: new Date()
+    };
+    
+    if (!data.games) data.games = [];
+    data.games.push(game);
+    
+    // Update bet status
+    bet.status = 'matched';
+    bet.matchedWith = userId;
+    
+    // Deduct amount from joining player
+    user.balance -= bet.amount;
+    saveData();
+    
+    // Notify both players
+    const player1 = data.users[bet.userId];
+    const player2 = user;
+    
+    ctx.reply(
+        `🎮 Bet Matched!\n\n` +
+        `Opponent: ${player2.wins}W ${player2.losses}L\n` +
+        `Stake: ${bet.amount} coins\n` +
+        `Prize: ${bet.amount * 1.9} coins\n\n` +
+        `Get ready to battle!`,
+        {
+            reply_markup: {
+                inline_keyboard: [[
+                    { text: '⚔️ Start Battle', web_app: { url: `https://yourapp.com/game/?game=${gameId}` } }
+                ]]
+            }
+        }
+    );
+    
+    // Notify the bet creator
+    ctx.telegram.sendMessage(bet.userId,
+        `🎮 Your bet was matched!\n\n` +
+        `Opponent: ${player2.wins}W ${player2.losses}L\n` +
+        `Stake: ${bet.amount} coins\n` +
+        `Prize: ${bet.amount * 1.9} coins\n\n` +
+        `Get ready to battle!`,
+        {
+            reply_markup: {
+                inline_keyboard: [[
+                    { text: '⚔️ Start Battle', web_app: { url: `https://yourapp.com/game/?game=${gameId}` } }
+                ]]
+            }
+        }
+    );
+}); 
 
 
