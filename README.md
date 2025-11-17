@@ -1,45 +1,76 @@
-# 🎮 Gear Wars - Telegram Battle Arena
+# 🎮 Gear Wars - Advanced Battle Arena
 
-A competitive battle arena game built for Telegram Mini Apps with real-time combat, power-ups, and wagering system.
+A feature-rich Telegram Mini App battle game with real-time multiplayer, betting system, tournaments, and achievements.
+
+![Gear Wars Banner](https://via.placeholder.com/800x200/2c3e50/ffffff?text=Gear+Wars+Battle+Arena)
 
 ## 🚀 Features
 
-- **Real-time 2D battles** in an arena environment
-- **Dual control schemes** - Keyboard for PC, Touch for mobile
-- **Power-up system** - Gears for attack, Hearts for healing
-- **Screen shake effects** and particle systems
-- **Color customization** via Telegram bot
-- **Daily bonus system** for player retention
-- **Statistics tracking** - wins, losses, balance
-- **Mobile-optimized** UI with responsive design
+### 🎯 Core Gameplay
+- **Real-time 2D battles** in dynamic arenas
+- **Dual control schemes** - Keyboard & Touch optimized
+- **Advanced combat system** with gears, shields, and parries
+- **Power-up collection** (gears, hearts, shields, speed boosts)
+- **Heat meter system** for special attacks
 
-## 🎯 Gameplay
+### 🌐 Multiplayer
+- **Real-time PvP battles** via WebSocket
+- **Room-based matchmaking** with shareable codes
+- **Synchronized game state** across players
+- **Chat system** during matches
+- **Reconnection handling** with heartbeat
 
-- **Objective**: Reduce opponent's health to zero using gear power-ups
-- **Controls**: 
-  - PC: Arrow keys for movement
-  - Mobile: Touch buttons or direct tap-to-move
-- **Power-ups**:
-  - ⚙️ Gear: Enables attack mode for 5 seconds
-  - ❤️ Heart: Restores 1 health point (max 5)
-- **Win Condition**: Deplete opponent's health or have more health when time expires
+### 💰 Economy & Betting
+- **Coin system** with daily bonuses
+- **Bet creation & matching** between players
+- **Smart payout system** (1.9x returns)
+- **Betting lobby** with live orders
+- **Balance tracking** and statistics
+
+### 🏆 Tournaments
+- **Bracket-based tournaments** (8 players)
+- **Entry fees** and prize pools
+- **Multiple formats** (single elimination)
+- **Automatic match scheduling**
+- **Real-time tournament updates**
+
+### 🎖️ Progression
+- **Achievement system** with 15+ unlockables
+- **Player statistics** tracking
+- **Leaderboard** with rankings
+- **Color customization**
+- **Win streaks** and special rewards
 
 ## 🛠️ Tech Stack
 
-- **Backend**: Node.js + Telegraf (Telegram Bot API)
-- **Frontend**: HTML5 Canvas + CSS3 + JavaScript
-- **Data Storage**: JSON file system (easily upgradable to database)
-- **Hosting**: Compatible with Render, Heroku, Vercel
+### Backend
+- **Node.js** + **Express** server
+- **Telegraf** for Telegram Bot API
+- **WebSocket** for real-time communication
+- **JSON file storage** (easily upgradable to database)
+
+### Frontend
+- **HTML5 Canvas** for game rendering
+- **CSS3** with responsive design
+- **Vanilla JavaScript** for game logic
+- **Mobile-optimized** touch controls
+
+### Deployment
+- **Render** for bot backend
+- **Vercel** for frontend hosting
+- **WebSocket support** with proper scaling
 
 ## 📦 Installation
 
 ### Prerequisites
-- Node.js 14+
+- Node.js 16+
 - Telegram Bot Token from [@BotFather](https://t.me/BotFather)
 
 ### Local Development
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/gear-wars.git
+   git clone https://github.com/0xsylum/gear-wars.git
    cd gear-wars
+
+   
