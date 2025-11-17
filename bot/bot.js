@@ -42,7 +42,7 @@ bot.command('start', (ctx) => {
     {
       reply_markup: {
         inline_keyboard: [
-          [{ text: '⚔️ Quick Battle (VS AI)', web_app: { url: 'https://your-app.com/game/' } }],
+          [{ text: '⚔️ Quick Battle (VS AI)', web_app: { url: 'https://gear-wars.vercel.app/' } }],
           [{ text: '💰 Create Bet', callback_data: 'create_bet' }],
           [{ text: '📊 Order Book', callback_data: 'order_book' }],
           [{ text: '🎨 Change Color', callback_data: 'change_color' }],
@@ -189,4 +189,5 @@ console.log('✅ Bot started successfully!');
 // Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
+
 
