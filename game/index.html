@@ -52,162 +52,79 @@
             object-fit: contain;
         }
 
-        .hud {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 95vw;
-            gap: 10px;
-        }
-
-        .player-info {
-            flex: 1;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 8px;
-            border-radius: 8px;
-            border: 2px solid;
-            font-size: clamp(10px, 2.5vw, 14px);
-        }
-
-        .player1-info {
-            border-color: #00ff88;
-        }
-
-        .player2-info {
-            border-color: #ff0088;
-        }
-
-        .hearts {
-            display: flex;
-            gap: 3px;
-            margin: 5px 0;
-            flex-wrap: wrap;
-        }
-
-        .heart {
-            width: clamp(12px, 4vw, 20px);
-            height: clamp(12px, 4vw, 20px);
-            font-size: clamp(12px, 4vw, 20px);
-        }
-
-        .stat-bar {
-            margin: 5px 0;
-        }
-
-        .stat-label {
-            font-size: clamp(8px, 2vw, 10px);
-            margin-bottom: 2px;
-            opacity: 0.8;
-        }
-
-        .bar-container {
-            width: 100%;
-            height: clamp(12px, 3vw, 16px);
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .bar-fill {
-            height: 100%;
-            transition: width 0.1s;
-            border-radius: 8px;
-        }
-
-        .stamina-bar {
-            background: linear-gradient(90deg, #00d4ff, #0088ff);
-        }
-
-        .heat-bar {
-            background: linear-gradient(90deg, #ff6600, #ff0000);
-        }
-
-        .controls {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 12px;
-            border-radius: 8px;
-            border: 2px solid #00d4ff;
-            width: 100%;
-            max-width: 95vw;
-            font-size: clamp(10px, 2.5vw, 12px);
-        }
-
-        .controls h3 {
-            margin-bottom: 8px;
-            color: #00d4ff;
-            font-size: clamp(12px, 3vw, 14px);
-        }
-
-        .control-section {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-        }
-
-        .control-column {
-            flex: 1;
-        }
-
-        .control-item {
-            margin: 4px 0;
-            font-size: clamp(9px, 2vw, 11px);
-        }
-
-        .key {
-            display: inline-block;
-            background: rgba(0, 212, 255, 0.2);
-            padding: 2px 6px;
-            border-radius: 4px;
-            border: 1px solid #00d4ff;
-            margin-right: 6px;
-            min-width: clamp(40px, 10vw, 50px);
-            text-align: center;
-            font-size: clamp(8px, 2vw, 10px);
-        }
-
-        .game-message {
+        .screen {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             background: rgba(0, 0, 0, 0.95);
-            padding: 20px 30px;
-            border-radius: 12px;
-            border: 3px solid #00d4ff;
-            font-size: clamp(20px, 6vw, 28px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            display: none;
             z-index: 1000;
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.8);
-            max-width: 90vw;
+            backdrop-filter: blur(5px);
+            padding: 20px;
         }
 
-        .countdown {
-            font-size: clamp(16px, 4vw, 20px);
-            margin-top: 8px;
-            color: #00d4ff;
+        .hidden {
+            display: none !important;
         }
 
-        .timer {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: clamp(14px, 3.5vw, 18px);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 6px 12px;
+        .screen h1 {
+            font-size: clamp(24px, 8vw, 36px);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(52, 152, 219, 0.5);
+        }
+
+        .screen p {
+            font-size: clamp(14px, 4vw, 18px);
+            margin-bottom: 20px;
+            color: #bdc3c7;
+        }
+
+        .screen button {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            border: none;
+            color: white;
+            padding: clamp(10px, 3vw, 15px) clamp(20px, 6vw, 30px);
+            font-size: clamp(14px, 4vw, 18px);
+            border-radius: 20px;
+            margin: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+            min-width: clamp(120px, 40vw, 180px);
+        }
+
+        .screen button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .screen button:active {
+            transform: translateY(0);
+        }
+
+        .instructions {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
             border-radius: 8px;
-            border: 2px solid #00d4ff;
-            z-index: 10;
+            max-width: min(90vw, 400px);
         }
 
-        .ability-cooldown {
-            font-size: clamp(8px, 2vw, 10px);
-            opacity: 0.7;
-            margin-top: 2px;
+        .instructions p {
+            margin: 8px 0;
+            font-size: clamp(11px, 3vw, 14px);
+            color: #ecf0f1;
         }
-        
+
         /* Mobile Controls */
         .mobile-controls {
             display: none;
@@ -219,10 +136,6 @@
         @media (pointer: coarse) {
             .mobile-controls {
                 display: block;
-            }
-            
-            .controls {
-                display: none;
             }
         }
 
@@ -318,192 +231,11 @@
             background: rgba(0, 212, 255, 0.7);
             transform: scale(0.95);
         }
-
-        /* Screens */
-        .screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            z-index: 1000;
-            backdrop-filter: blur(5px);
-            padding: 20px;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .screen h1 {
-            font-size: clamp(24px, 8vw, 36px);
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #3498db, #9b59b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(52, 152, 219, 0.5);
-        }
-
-        .screen p {
-            font-size: clamp(14px, 4vw, 18px);
-            margin-bottom: 20px;
-            color: #bdc3c7;
-        }
-
-        .screen button {
-            background: linear-gradient(45deg, #3498db, #2980b9);
-            border: none;
-            color: white;
-            padding: clamp(10px, 3vw, 15px) clamp(20px, 6vw, 30px);
-            font-size: clamp(14px, 4vw, 18px);
-            border-radius: 20px;
-            margin: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
-            min-width: clamp(120px, 40vw, 180px);
-        }
-
-        .screen button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
-        }
-
-        .screen button:active {
-            transform: translateY(0);
-        }
-
-        .instructions {
-            margin-top: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            max-width: min(90vw, 400px);
-        }
-
-        .instructions p {
-            margin: 8px 0;
-            font-size: clamp(11px, 3vw, 14px);
-            color: #ecf0f1;
-        }
-
-        /* Hide keyboard controls on mobile */
-        @media (max-width: 768px) {
-            .controls {
-                display: none;
-            }
-        }
-
-        /* Very small screens */
-        @media (max-height: 600px) {
-            #gameContainer {
-                gap: 5px;
-                padding: 5px;
-            }
-            
-            .hud {
-                gap: 5px;
-            }
-            
-            .player-info {
-                padding: 5px;
-            }
-        }
-
-        /* Portrait mode */
-        @media (orientation: portrait) and (max-height: 700px) {
-            #gameCanvas {
-                max-height: 50vh;
-            }
-        }
-
-        /* Landscape mode */
-        @media (orientation: landscape) and (max-height: 500px) {
-            #gameContainer {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-            
-            .hud {
-                order: 2;
-                width: 100%;
-            }
-            
-            #gameCanvas {
-                order: 1;
-                max-height: 70vh;
-            }
-            
-            .controls {
-                display: none;
-            }
-        }
     </style>
 </head>
 <body>
     <div id="gameContainer">
-        <div class="hud">
-            <div class="player-info player1-info">
-                <h3>PLAYER 1</h3>
-                <div class="hearts" id="p1Hearts"></div>
-                <div class="stat-bar">
-                    <div class="stat-label">STAMINA</div>
-                    <div class="bar-container">
-                        <div class="bar-fill stamina-bar" id="p1Stamina"></div>
-                    </div>
-                </div>
-                <div class="stat-bar">
-                    <div class="stat-label">HEAT</div>
-                    <div class="bar-container">
-                        <div class="bar-fill heat-bar" id="p1Heat"></div>
-                    </div>
-                </div>
-                <div class="ability-cooldown" id="p1Shield">Shield: Ready</div>
-                <div class="ability-cooldown" id="p1Boost">Boost: Ready</div>
-            </div>
-
-            <div class="player-info player2-info">
-                <h3>PLAYER 2</h3>
-                <div class="hearts" id="p2Hearts"></div>
-                <div class="stat-bar">
-                    <div class="stat-label">STAMINA</div>
-                    <div class="bar-container">
-                        <div class="bar-fill stamina-bar" id="p2Stamina"></div>
-                    </div>
-                </div>
-                <div class="stat-bar">
-                    <div class="stat-label">HEAT</div>
-                    <div class="bar-container">
-                        <div class="bar-fill heat-bar" id="p2Heat"></div>
-                    </div>
-                </div>
-                <div class="ability-cooldown" id="p2Shield">Shield: Ready</div>
-                <div class="ability-cooldown" id="p2Boost">Boost: Ready</div>
-            </div>
-        </div>
-
-        <div style="position: relative; width: 100%; display: flex; justify-content: center;">
-            <canvas id="gameCanvas"></canvas>
-            <div class="timer" id="gameTimer">5:00</div>
-        </div>
-
-        <div class="controls">
-            <h3>🎮 CONTROLS</h3>
-            <div class="control-section">
-                <div class="control-column">
-                    <div class="control-item"><span class="key">WASD</span> Move</div>
-                    <div class="control-item"><span class="key">SPACE</span> Boost</div>
-                    <div class="control-item"><span class="key">SHIFT</span> Shield</div>
-                    <div class="control-item"><span class="key">Q</span> Parry</div>
-                </div>
-            </div>
-        </div>
+        <canvas id="gameCanvas"></canvas>
     </div>
 
     <!-- Mobile Controls -->
@@ -542,13 +274,19 @@
         <button id="menuBtn">MAIN MENU</button>
     </div>
 
-    <div class="game-message" id="gameMessage"></div>
-
     <script>
+        // SIMPLE WORKING VERSION - Debugging enabled
+        console.log("🚀 Game script loading...");
+
         // Telegram Web App initialization
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
+        try {
+            const tg = window.Telegram.WebApp;
+            tg.expand();
+            tg.ready();
+            console.log("✅ Telegram WebApp initialized");
+        } catch (e) {
+            console.log("ℹ️ Not in Telegram environment");
+        }
 
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -559,6 +297,8 @@
         const startBtn = document.getElementById('startBtn');
         const restartBtn = document.getElementById('restartBtn');
         const menuBtn = document.getElementById('menuBtn');
+
+        console.log("📝 Elements found:", { startScreen, startBtn, restartBtn, menuBtn });
 
         // Set responsive canvas size
         function resizeCanvas() {
@@ -578,270 +318,350 @@
             canvas.width = width;
             canvas.height = height;
             
-            console.log(`Canvas resized: ${width}x${height}, Screen: ${window.innerWidth}x${window.innerHeight}`);
-        }
-
-        // Game constants - will be scaled based on canvas size
-        const BASE_WIDTH = 800;
-        const BASE_HEIGHT = 600;
-        
-        function getScaledValue(baseValue) {
-            const scale = Math.min(canvas.width / BASE_WIDTH, canvas.height / BASE_HEIGHT);
-            return baseValue * scale;
+            console.log(`📐 Canvas resized: ${width}x${height}`);
         }
 
         // Game state
-        let gameTime = 300; // 5 minutes
+        let gameTime = 60; // 1 minute for testing
         let gameRunning = false;
         let keys = {};
         
-        // Player class
+        // Simple Player class
         class Player {
-            constructor(x, y, color, controls, isAI = false) {
+            constructor(x, y, color, isAI = false) {
                 this.x = x;
                 this.y = y;
                 this.vx = 0;
                 this.vy = 0;
                 this.color = color;
-                this.controls = controls;
                 this.isAI = isAI;
                 this.health = 5;
-                this.stamina = 100;
-                this.heat = 0;
+                this.radius = 20;
                 this.hasGear = false;
-                this.gearTimer = 0;
-                this.shielded = false;
-                this.shieldCharges = 2;
-                this.shieldTimer = 0;
-                this.parrying = false;
-                this.parryTimer = 0;
-                this.boostCooldown = 0;
-                this.invulnerable = false;
-                this.invulnerableTimer = 0;
             }
             
-            getRadius() { return getScaledValue(20); }
-            getMoveForce() { return getScaledValue(0.6); }
-            getBoostForce() { return getScaledValue(8); }
-            getCornerZone() { return getScaledValue(80); }
-            
-            update(dt, opponent, gears, hearts) {
+            update(dt, opponent) {
                 if (this.isAI) {
-                    this.updateAI(dt, opponent, gears, hearts);
+                    // Simple AI: move toward player
+                    const dx = opponent.x - this.x;
+                    const dy = opponent.y - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > 50) {
+                        this.vx = (dx / distance) * 2;
+                        this.vy = (dy / distance) * 2;
+                    }
                 } else {
-                    this.updatePlayer(dt);
+                    // Player movement
+                    if (keys['w'] || keys['ArrowUp']) this.vy -= 0.5;
+                    if (keys['s'] || keys['ArrowDown']) this.vy += 0.5;
+                    if (keys['a'] || keys['ArrowLeft']) this.vx -= 0.5;
+                    if (keys['d'] || keys['ArrowRight']) this.vx += 0.5;
                 }
                 
-                // Update timers
-                if (this.gearTimer > 0) this.gearTimer -= dt;
-                if (this.shieldTimer > 0) this.shieldTimer -= dt;
-                if (this.parryTimer > 0) this.parryTimer -= dt;
-                if (this.boostCooldown > 0) this.boostCooldown -= dt;
-                if (this.invulnerableTimer > 0) this.invulnerableTimer -= dt;
-                
-                if (this.gearTimer <= 0) this.hasGear = false;
-                if (this.shieldTimer <= 0) this.shielded = false;
-                if (this.parryTimer <= 0) this.parrying = false;
-                if (this.invulnerableTimer <= 0) this.invulnerable = false;
-                
-                // Stamina regen & Heat decay
-                this.stamina = Math.min(100, this.stamina + 0.3);
-                this.heat = Math.max(0, this.heat - 0.15);
-            }
-            
-            updatePlayer(dt) {
-                const moveForce = this.getMoveForce();
-                if (keys[this.controls.up]) this.vy -= moveForce;
-                if (keys[this.controls.down]) this.vy += moveForce;
-                if (keys[this.controls.left]) this.vx -= moveForce;
-                if (keys[this.controls.right]) this.vx += moveForce;
-                
-                this.applyPhysics(dt);
-            }
-            
-            updateAI(dt, opponent, gears, hearts) {
-                // Simple AI behavior
-                let targetX = opponent.x;
-                let targetY = opponent.y;
-                
-                // Find collectibles
-                for (let gear of gears) {
-                    if (!gear.warning && !this.hasGear) {
-                        targetX = gear.x;
-                        targetY = gear.y;
-                        break;
-                    }
-                }
-                
-                if (this.health < 3) {
-                    for (let heart of hearts) {
-                        targetX = heart.x;
-                        targetY = heart.y;
-                        break;
-                    }
-                }
-                
-                // Move toward target
-                const dx = targetX - this.x;
-                const dy = targetY - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                
-                if (distance > 50) {
-                    const moveForce = this.getMoveForce();
-                    this.vx += (dx / distance) * moveForce;
-                    this.vy += (dy / distance) * moveForce;
-                }
-                
-                this.applyPhysics(dt);
-            }
-            
-            applyPhysics(dt) {
                 // Apply friction
-                this.vx *= 0.98;
-                this.vy *= 0.98;
+                this.vx *= 0.95;
+                this.vy *= 0.95;
                 
                 // Update position
                 this.x += this.vx;
                 this.y += this.vy;
                 
-                const radius = this.getRadius();
-                const cornerZone = this.getCornerZone();
-                
                 // Wall collision
-                if (this.x - radius < 0) {
-                    this.x = radius;
+                if (this.x - this.radius < 0) {
+                    this.x = this.radius;
                     this.vx *= -0.7;
                 }
-                if (this.x + radius > canvas.width) {
-                    this.x = canvas.width - radius;
+                if (this.x + this.radius > canvas.width) {
+                    this.x = canvas.width - this.radius;
                     this.vx *= -0.7;
                 }
-                if (this.y - radius < 0) {
-                    this.y = radius;
+                if (this.y - this.radius < 0) {
+                    this.y = this.radius;
                     this.vy *= -0.7;
                 }
-                if (this.y + radius > canvas.height) {
-                    this.y = canvas.height - radius;
+                if (this.y + this.radius > canvas.height) {
+                    this.y = canvas.height - this.radius;
                     this.vy *= -0.7;
                 }
-                
-                // Corner speed boost
-                const inCorner = (this.x < cornerZone || this.x > canvas.width - cornerZone) &&
-                                (this.y < cornerZone || this.y > canvas.height - cornerZone);
-                if (inCorner) {
-                    this.vx *= 1.02;
-                    this.vy *= 1.02;
-                }
-            }
-            
-            boost() {
-                if (this.stamina >= 40 && this.boostCooldown <= 0) {
-                    const angle = Math.atan2(this.vy, this.vx) || 0;
-                    const boostForce = this.getBoostForce();
-                    this.vx += Math.cos(angle) * boostForce;
-                    this.vy += Math.sin(angle) * boostForce;
-                    this.stamina -= 40;
-                    this.boostCooldown = 3000;
-                }
-            }
-            
-            activateShield() {
-                if (this.stamina >= 50 && this.shieldCharges > 0) {
-                    this.shielded = true;
-                    this.shieldTimer = 2000;
-                    this.shieldCharges--;
-                    this.stamina -= 50;
-                }
-            }
-            
-            activateParry() {
-                if (!this.parrying) {
-                    this.parrying = true;
-                    this.parryTimer = 300;
-                }
-            }
-            
-            takeDamage(amount) {
-                if (!this.shielded && !this.invulnerable) {
-                    this.health -= amount;
-                    this.invulnerable = true;
-                    this.invulnerableTimer = 500;
-                    return true;
-                } else if (this.shielded) {
-                    this.shielded = false;
-                    this.shieldTimer = 0;
-                }
-                return false;
             }
             
             draw() {
                 ctx.save();
-                const radius = this.getRadius();
                 
-                // Draw player
+                // Draw player circle
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, radius, 0, Math.PI * 2);
-                
-                if (this.invulnerable && Math.floor(Date.now() / 100) % 2) {
-                    ctx.globalAlpha = 0.5;
-                }
-                
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
                 ctx.fillStyle = this.hasGear ? '#ff3300' : this.color;
                 ctx.fill();
                 
-                // Gear teeth
+                // Draw gear teeth if has gear
                 if (this.hasGear) {
-                    const teeth = 12;
-                    for (let i = 0; i < teeth; i++) {
-                        const angle = (i / teeth) * Math.PI * 2 + Date.now() / 100;
-                        const x1 = this.x + Math.cos(angle) * radius;
-                        const y1 = this.y + Math.sin(angle) * radius;
-                        const x2 = this.x + Math.cos(angle) * (radius + getScaledValue(8));
-                        const y2 = this.y + Math.sin(angle) * (radius + getScaledValue(8));
-                        
-                        ctx.beginPath();
-                        ctx.moveTo(x1, y1);
-                        ctx.lineTo(x2, y2);
-                        ctx.strokeStyle = '#ff6600';
-                        ctx.lineWidth = getScaledValue(3);
-                        ctx.stroke();
-                    }
-                }
-                
-                // Shield effect
-                if (this.shielded) {
+                    ctx.strokeStyle = '#ff6600';
+                    ctx.lineWidth = 3;
                     ctx.beginPath();
-                    ctx.arc(this.x, this.y, radius + getScaledValue(8), 0, Math.PI * 2);
-                    ctx.strokeStyle = '#00d4ff';
-                    ctx.lineWidth = getScaledValue(3);
-                    ctx.setLineDash([getScaledValue(5), getScaledValue(5)]);
-                    ctx.stroke();
-                    ctx.setLineDash([]);
-                }
-                
-                // Parry indicator
-                if (this.parrying) {
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, radius + getScaledValue(12), 0, Math.PI * 2);
-                    ctx.strokeStyle = '#ffff00';
-                    ctx.lineWidth = getScaledValue(2);
+                    ctx.arc(this.x, this.y, this.radius + 5, 0, Math.PI * 2);
                     ctx.stroke();
                 }
+                
+                // Draw health
+                ctx.fillStyle = '#fff';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`HP: ${this.health}`, this.x, this.y - this.radius - 10);
                 
                 ctx.restore();
             }
         }
 
-        // Rest of the game code remains similar but with scaled values...
-        // [The rest of your game JavaScript code would go here]
-        // For brevity, I've included the core structure. Let me know if you need the complete scaled game code.
+        // Game objects
+        let player1, player2;
+        let gears = [];
+        let hearts = [];
 
-        // Initialize and start
+        // Input handling
+        window.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            console.log("⌨️ Key pressed:", e.key);
+        });
+        
+        window.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+
+        // Mobile Controls
+        function setupMobileControls() {
+            console.log("📱 Setting up mobile controls...");
+            
+            const dPadUp = document.getElementById('d-pad-up');
+            const dPadDown = document.getElementById('d-pad-down');
+            const dPadLeft = document.getElementById('d-pad-left');
+            const dPadRight = document.getElementById('d-pad-right');
+
+            if (dPadUp) {
+                dPadUp.addEventListener('touchstart', (e) => { e.preventDefault(); keys['w'] = true; });
+                dPadUp.addEventListener('touchend', (e) => { e.preventDefault(); keys['w'] = false; });
+            }
+
+            if (dPadDown) {
+                dPadDown.addEventListener('touchstart', (e) => { e.preventDefault(); keys['s'] = true; });
+                dPadDown.addEventListener('touchend', (e) => { e.preventDefault(); keys['s'] = false; });
+            }
+
+            if (dPadLeft) {
+                dPadLeft.addEventListener('touchstart', (e) => { e.preventDefault(); keys['a'] = true; });
+                dPadLeft.addEventListener('touchend', (e) => { e.preventDefault(); keys['a'] = false; });
+            }
+
+            if (dPadRight) {
+                dPadRight.addEventListener('touchstart', (e) => { e.preventDefault(); keys['d'] = true; });
+                dPadRight.addEventListener('touchend', (e) => { e.preventDefault(); keys['d'] = false; });
+            }
+
+            const boostBtn = document.getElementById('action-boost');
+            const shieldBtn = document.getElementById('action-shield');
+            const parryBtn = document.getElementById('action-parry');
+
+            // For now, these will just log
+            if (boostBtn) boostBtn.addEventListener('touchstart', (e) => { e.preventDefault(); console.log("Boost!"); });
+            if (shieldBtn) shieldBtn.addEventListener('touchstart', (e) => { e.preventDefault(); console.log("Shield!"); });
+            if (parryBtn) parryBtn.addEventListener('touchstart', (e) => { e.preventDefault(); console.log("Parry!"); });
+            
+            console.log("✅ Mobile controls setup complete");
+        }
+        
+        // Collision detection
+        function checkCollision(obj1, obj2, r1, r2) {
+            const dx = obj1.x - obj2.x;
+            const dy = obj1.y - obj2.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            return distance < r1 + r2;
+        }
+
+        // Game loop
+        let lastTime = Date.now();
+        function gameLoop() {
+            if (!gameRunning) return;
+            
+            const currentTime = Date.now();
+            const dt = currentTime - lastTime;
+            lastTime = currentTime;
+            
+            // Update game time
+            gameTime -= dt / 1000;
+            if (gameTime <= 0) {
+                endGame();
+                return;
+            }
+            
+            // Clear canvas
+            ctx.fillStyle = '#0a0a15';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid
+            ctx.strokeStyle = '#1a1a2e';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Update players
+            player1.update(dt, player2);
+            player2.update(dt, player1);
+            
+            // Player collision
+            if (checkCollision(player1, player2, player1.radius, player2.radius)) {
+                // Simple bounce
+                const tempVx = player1.vx;
+                const tempVy = player1.vy;
+                player1.vx = player2.vx;
+                player1.vy = player2.vy;
+                player2.vx = tempVx;
+                player2.vy = tempVy;
+                
+                // Gear damage
+                if (player1.hasGear && !player2.hasGear) {
+                    player2.health--;
+                } else if (player2.hasGear && !player1.hasGear) {
+                    player1.health--;
+                }
+                
+                // Check for game over
+                if (player1.health <= 0 || player2.health <= 0) {
+                    endGame();
+                    return;
+                }
+            }
+            
+            // Spawn gears occasionally
+            if (Math.random() < 0.01 && gears.length < 3) {
+                gears.push({
+                    x: Math.random() * (canvas.width - 40) + 20,
+                    y: Math.random() * (canvas.height - 40) + 20,
+                    radius: 15
+                });
+            }
+            
+            // Update gears
+            gears = gears.filter(gear => {
+                // Check collision with players
+                if (checkCollision(player1, gear, player1.radius, gear.radius)) {
+                    player1.hasGear = true;
+                    return false;
+                }
+                if (checkCollision(player2, gear, player2.radius, gear.radius)) {
+                    player2.hasGear = true;
+                    return false;
+                }
+                
+                // Draw gear
+                ctx.fillStyle = '#ff6600';
+                ctx.beginPath();
+                ctx.arc(gear.x, gear.y, gear.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                return true;
+            });
+            
+            // Draw players
+            player1.draw();
+            player2.draw();
+            
+            // Draw timer
+            ctx.fillStyle = '#fff';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Time: ${Math.ceil(gameTime)}`, canvas.width / 2, 30);
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function endGame() {
+            gameRunning = false;
+            console.log("🎯 Game ended");
+            
+            const resultTitle = document.getElementById('resultTitle');
+            const resultMessage = document.getElementById('resultMessage');
+            
+            if (player1.health <= 0) {
+                resultTitle.textContent = 'DEFEAT! 💀';
+                resultMessage.textContent = 'The enemy was too strong!';
+            } else if (player2.health <= 0) {
+                resultTitle.textContent = 'VICTORY! 🏆';
+                resultMessage.textContent = 'You defeated the enemy!';
+            } else {
+                resultTitle.textContent = 'TIME UP! ⏰';
+                resultMessage.textContent = 'The battle was close!';
+            }
+            
+            gameOverScreen.classList.remove('hidden');
+        }
+        
+        // Screen management
+        function startGame() {
+            console.log("🎮 Start button clicked - starting game!");
+            
+            startScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            
+            // Reset game state
+            gameTime = 60;
+            gameRunning = true;
+            
+            // Initialize players
+            player1 = new Player(canvas.width * 0.25, canvas.height / 2, '#00ff88');
+            player2 = new Player(canvas.width * 0.75, canvas.height / 2, '#ff0088', true);
+            
+            gears = [];
+            hearts = [];
+            
+            console.log("🔄 Starting game loop...");
+            lastTime = Date.now();
+            gameLoop();
+        }
+
+        // Initialize the game
+        console.log("🔧 Initializing game...");
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
         
-        // Start with the start screen visible
-        startBtn.addEventListener('click', startGame);
+        // Set up event listeners
+        if (startBtn) {
+            startBtn.addEventListener('click', startGame);
+            console.log("✅ Start button event listener attached");
+        } else {
+            console.error("❌ Start button not found!");
+        }
+        
+        if (restartBtn) {
+            restartBtn.addEventListener('click', startGame);
+            console.log("✅ Restart button event listener attached");
+        }
+        
+        if (menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                gameOverScreen.classList.add('hidden');
+                startScreen.classList.remove('hidden');
+            });
+            console.log("✅ Menu button event listener attached");
+        }
+        
+        setupMobileControls();
+        
+        console.log("🎉 Game initialization complete!");
+        console.log("👉 Click the START BATTLE button to begin!");
+
+        // Force show start screen (in case it's hidden)
+        startScreen.classList.remove('hidden');
     </script>
 </body>
-                        </html>
+    </html>
