@@ -1,3 +1,22 @@
+// Add at top of bot.js
+const http = require('http');
+const { wss } = require('./websocket');
+
+// Create HTTP server for WebSocket
+const server = http.createServer();
+server.on('upgrade', (request, socket, head) => {
+    wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+    });
+});
+
+// Update bot launch to also start server
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    bot.launch();
+}); 
+
 const { Telegraf } = require('telegraf');
 const fs = require('fs');
 
@@ -189,5 +208,6 @@ console.log('✅ Bot started successfully!');
 // Enable graceful stop
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
+
 
 
