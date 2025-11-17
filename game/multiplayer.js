@@ -20,7 +20,7 @@ class MultiplayerManager {
         }
 
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        const wsUrl = `${protocol}//${window.location.host}`;
+const wsUrl = `${protocol}//gear-wars.onrender.com`;
         
         console.log(`🔗 Connecting to: ${wsUrl}`);
         this.ws = new WebSocket(wsUrl);
