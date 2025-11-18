@@ -15,7 +15,10 @@ let data = {
     bets: [],
     leaderboard: {}
 };
- const { P3DGameManager } = require('./p3d-integration');
+ // ========================================
+// 3DPASS (P3D) INTEGRATION SECTION
+// ========================================
+const { P3DGameManager } = require('./p3d-integration');
 const p3dManager = new P3DGameManager();
 
 // Initialize P3D
@@ -27,11 +30,11 @@ bot.command('p3d', async (ctx) => {
     const dashboard = await p3dManager.getUserDashboard(userId);
     
     const message = `
-🎮 *P3D Network - Gear Wars Integration*
+🎮 *3DPass Network - Gear Wars Integration*
 
-💰 *Your P3D Balance:* ${dashboard.balance.toFixed(2)} P3D
+💰 *Your P3D Balance:* ${dashboard.balance.toFixed(6)} P3D
 🏆 *Leaderboard Position:* ${dashboard.leaderboardPosition || 'Not ranked'}
-📈 *Staking Rewards:* ${dashboard.stakingRewards.toFixed(2)} P3D
+📈 *Staking Rewards:* ${dashboard.stakingRewards.toFixed(6)} P3D
 👥 *Referral Code:* \`${dashboard.referralCode}\`
 
 *Earn P3D by:*
@@ -48,7 +51,7 @@ bot.command('p3d', async (ctx) => {
 
 bot.command('p3d_stake', (ctx) => {
     ctx.reply(
-        '💰 *P3D Staking*\n\nStake your P3D tokens to earn 15% APR rewards!\n\n' +
+        '💰 *3DPass Staking*\n\nStake your P3D tokens to earn 15% APR rewards!\n\n' +
         'Available staking amounts:\n' +
         '• 10 P3D\n• 50 P3D  \n• 100 P3D\n• 500 P3D\n\n' +
         'Use: `/stake_amount 50` to stake 50 P3D',
@@ -59,10 +62,10 @@ bot.command('p3d_stake', (ctx) => {
 bot.command('p3d_leaderboard', (ctx) => {
     const leaderboard = p3dManager.p3d.getP3DLeaderboard();
     
-    let leaderboardText = '🏆 *P3D Leaderboard*\n\n';
+    let leaderboardText = '🏆 *3DPass Leaderboard*\n\n';
     leaderboard.forEach((entry, index) => {
         const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
-        leaderboardText += `${medal} ${entry.balance.toFixed(1)} P3D\n`;
+        leaderboardText += `${medal} ${entry.balance.toFixed(6)} P3D\n`;
     });
     
     ctx.reply(leaderboardText, { parse_mode: 'Markdown' });
@@ -91,15 +94,15 @@ bot.on('web_app_data', async (ctx) => {
             
             // Add P3D rewards info
             if (p3dResult.totalAwarded > 0) {
-                replyMessage += `💰 *P3D Rewards:* +${p3dResult.totalAwarded.toFixed(2)} P3D\n`;
+                replyMessage += `💰 *3DPass Rewards:* +${p3dResult.totalAwarded.toFixed(6)} P3D\n`;
             }
             
-            replyMessage += `\nUse /p3d to check your P3D balance!`;
+            replyMessage += `\nUse /p3d to check your 3DPass balance!`;
             
             ctx.reply(replyMessage, { parse_mode: 'Markdown' });
         }
     } catch (error) {
-        console.error('P3D game result error:', error);
+        console.error('3DPass game result error:', error);
     }
 }); 
 // Load/save data with error handling
@@ -844,4 +847,5 @@ process.once('SIGTERM', () => {
 });
 
 module.exports = { bot, processBetGameResult };
+
 
