@@ -3,29 +3,58 @@ const axios = require('axios');
 
 class P3DIntegration {
     constructor() {
-        this.provider = new ethers.JsonRpcProvider('https://mainnet.base.org');
-        this.p3dContractAddress = '0xP3D_CONTRACT_ADDRESS'; // Replace with actual P3D contract
+        // 3DPass RPC endpoints
+        this.provider = new ethers.JsonRpcProvider('https://rpc.3dpass.org');
+        // Bridged P3D on Ethereum
+        this.p3dContractAddress = '0x4f3a4e37701402C61146071309e45A15843025E1';
+        // Alternative: P3D on Binance Smart Chain
+        // this.provider = new ethers.JsonRpcProvider('https://bsc-dataseed.binance.org/');
+        // this.p3dContractAddress = '0x078E7A2037b63846836E9d721cf2dabC08b94281';
+        
         this.isEnabled = false;
         this.stakingPool = new Map();
         this.rewardRates = {
-            win: 0.1,      // 0.1 P3D per win
-            bet: 0.05,     // 0.05 P3D per bet placed
-            tournament: 1, // 1 P3D per tournament win
-            referral: 0.2  // 0.2 P3D per referral
+            win: 0.1,           // 0.1 P3D per win
+            bet: 0.05,          // 0.05 P3D per bet placed
+            tournament: 1,      // 1 P3D per tournament win
+            referral: 0.2,      // 0.2 P3D per referral
+            participation: 0.01 // 0.01 P3D for playing
+        };
+        
+        // P3D token details
+        this.tokenInfo = {
+            name: "3DPass",
+            symbol: "P3D",
+            decimals: 18,
+            totalSupply: "100000000000000000000000000", // 100M P3D
+            bridges: {
+                ethereum: "0x4f3a4e37701402C61146071309e45A15843025E1",
+                bsc: "0x078E7A2037b63846836E9d721cf2dabC08b94281"
+            }
         };
     }
 
     async initialize() {
         try {
-            // Check if P3D contract is accessible
+            console.log('🔗 Connecting to 3DPass network...');
+            
+            // Test connection to 3DPass RPC
+            const blockNumber = await this.provider.getBlockNumber();
+            console.log(`✅ Connected to 3DPass network. Current block: ${blockNumber}`);
+            
+            // Test P3D contract (if we had the ABI)
             // const contract = new ethers.Contract(this.p3dContractAddress, P3D_ABI, this.provider);
             // const totalSupply = await contract.totalSupply();
             
-            console.log('✅ P3D Network integration initialized');
             this.isEnabled = true;
+            console.log('✅ 3DPass Network integration initialized successfully');
             return true;
         } catch (error) {
-            console.log('⚠️ P3D Network not available, running in simulation mode');
+            console.log('⚠️ 3DPass Network not available, running in simulation mode');
+            console.log('💡 To enable real P3D transactions, ensure:');
+            console.log('   - 3DPass RPC endpoint is accessible');
+            console.log('   - P3D contract ABI is configured');
+            console.log('   - Wallet with P3D tokens is set up');
             this.isEnabled = false;
             return false;
         }
@@ -40,16 +69,18 @@ class P3DIntegration {
         try {
             const rewardAmount = amount || this.rewardRates[action] || 0;
             
-            // In real implementation, this would call the P3D contract
-            // await this.transferTokens(userId, rewardAmount);
+            console.log(`🎯 Awarding ${rewardAmount} P3D to ${userId} for ${action}`);
             
-            console.log(`🎯 Awarded ${rewardAmount} P3D to ${userId} for ${action}`);
+            // In real implementation, this would call the P3D contract
+            // const tx = await this.transferTokens(userId, rewardAmount);
             
             return {
                 success: true,
                 amount: rewardAmount,
                 action: action,
-                transaction: 'simulated_tx_hash'
+                token: 'P3D',
+                network: '3DPass',
+                transaction: 'simulated_tx_hash' // Replace with actual tx hash
             };
         } catch (error) {
             console.error('❌ P3D award failed:', error);
@@ -71,6 +102,7 @@ class P3DIntegration {
             success: true,
             amount: rewardAmount,
             action: action,
+            token: 'P3D',
             simulated: true,
             balance: userBalance + rewardAmount
         };
@@ -84,7 +116,8 @@ class P3DIntegration {
                 this.stakingPool.set(userId, {
                     amount: 0,
                     stakedAt: Date.now(),
-                    rewards: 0
+                    rewards: 0,
+                    token: 'P3D'
                 });
             }
             
@@ -96,6 +129,7 @@ class P3DIntegration {
             return {
                 success: true,
                 stakedAmount: stake.amount,
+                token: 'P3D',
                 totalStaked: Array.from(this.stakingPool.values())
                     .reduce((sum, s) => sum + s.amount, 0)
             };
@@ -105,7 +139,7 @@ class P3DIntegration {
         }
     }
 
-    // Calculate staking rewards
+    // Calculate staking rewards (15% APR)
     calculateStakingRewards(userId) {
         const stake = this.stakingPool.get(userId);
         if (!stake) return 0;
@@ -118,34 +152,21 @@ class P3DIntegration {
         return Math.max(0, rewards);
     }
 
-    // P3D-based tournament system
-    createP3DTournament(creatorId, entryFee, prizePool) {
-        const tournamentId = Date.now().toString();
-        
-        const tournament = {
-            id: tournamentId,
-            creatorId: creatorId,
-            entryFee: entryFee,
-            prizePool: prizePool,
-            currency: 'P3D',
-            status: 'registration',
-            players: [],
-            createdAt: new Date()
-        };
-        
-        console.log(`🎮 Created P3D tournament: ${entryFee} P3D entry fee`);
-        return tournament;
-    }
-
     // Get user P3D balance
     async getBalance(userId) {
         if (!this.isEnabled) {
             return global.p3dSimulation?.get(userId) || 0;
         }
         
-        // In real implementation, query blockchain
-        // const balance = await this.contract.balanceOf(userWalletAddress);
-        return 0; // Placeholder
+        try {
+            // In real implementation, query blockchain
+            // This would require wallet address mapping
+            // const balance = await this.contract.balanceOf(userWalletAddress);
+            return 0; // Placeholder for real implementation
+        } catch (error) {
+            console.error('❌ Balance check failed:', error);
+            return global.p3dSimulation?.get(userId) || 0;
+        }
     }
 
     // P3D leaderboard
@@ -158,16 +179,16 @@ class P3DIntegration {
             .slice(0, 10);
     }
 
-    // P3D airdrop events
-    async airdropToActivePlayers(amount) {
-        // Airdrop P3D to active players in the last 24 hours
-        console.log(`🎁 Airdropping ${amount} P3D to active players`);
-        
+    // Get 3DPass network info
+    getNetworkInfo() {
         return {
-            success: true,
-            airdroppedAmount: amount,
-            recipients: 0, // Would be actual count
-            simulated: !this.isEnabled
+            network: "3DPass",
+            token: "P3D",
+            rpc: "https://rpc.3dpass.org",
+            bridges: this.tokenInfo.bridges,
+            decimals: 18,
+            nativeRuntime: "1 P3D = 1e12 Crumbs",
+            evmRuntime: "1 P3D = 1e18 Crumbs"
         };
     }
 }
@@ -181,24 +202,24 @@ class P3DGameManager {
 
     async initialize() {
         await this.p3d.initialize();
-        console.log('🎮 P3D Game Manager initialized');
+        console.log('🎮 3DPass Game Manager initialized');
     }
 
     // Enhanced game result handler with P3D rewards
-    async handleGameResult(userId, result, gameType = 'quick_battle') {
+    async handleGameResult(userId, gameData) {
         const rewards = [];
         
-        if (result.won) {
+        if (gameData.won) {
             // Award P3D for winning
             const winReward = await this.p3d.awardTokens(userId, 'win');
             rewards.push(winReward);
             
             // Bonus for streaks
-            if (result.winStreak >= 3) {
+            if (gameData.winStreak >= 3) {
                 const streakBonus = await this.p3d.awardTokens(
                     userId, 
                     'streak_bonus', 
-                    result.winStreak * 0.05
+                    gameData.winStreak * 0.05
                 );
                 rewards.push(streakBonus);
             }
@@ -213,82 +234,11 @@ class P3DGameManager {
         rewards.push(participationReward);
         
         return {
-            gameResult: result,
+            gameResult: gameData,
             p3dRewards: rewards,
-            totalAwarded: rewards.reduce((sum, r) => sum + r.amount, 0)
+            totalAwarded: rewards.reduce((sum, r) => sum + r.amount, 0),
+            token: 'P3D'
         };
-    }
-
-    // Handle betting with P3D
-    async handleP3DBet(userId, betAmount, outcome) {
-        if (outcome.won) {
-            const winMultiplier = 1.9; // 1.9x return
-            const winnings = betAmount * winMultiplier;
-            
-            const reward = await this.p3d.awardTokens(
-                userId, 
-                'bet_win', 
-                winnings
-            );
-            
-            return {
-                success: true,
-                betAmount: betAmount,
-                winnings: winnings,
-                reward: reward
-            };
-        }
-        
-        return {
-            success: false,
-            betAmount: betAmount,
-            winnings: 0,
-            message: 'Bet lost'
-        };
-    }
-
-    // Referral system with P3D rewards
-    generateReferralCode(userId) {
-        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-        this.referralCodes.set(code, {
-            userId: userId,
-            createdAt: new Date(),
-            uses: 0
-        });
-        
-        return code;
-    }
-
-    async useReferralCode(code, newUserId) {
-        const referral = this.referralCodes.get(code);
-        if (!referral) {
-            return { success: false, error: 'Invalid referral code' };
-        }
-        
-        // Award P3D to both users
-        const referrerReward = await this.p3d.awardTokens(
-            referral.userId, 
-            'referral'
-        );
-        
-        const newUserReward = await this.p3d.awardTokens(
-            newUserId, 
-            'referral_join', 
-            0.1
-        );
-        
-        referral.uses += 1;
-        
-        return {
-            success: true,
-            referrerReward: referrerReward,
-            newUserReward: newUserReward
-        };
-    }
-
-    // P3D staking interface
-    async stakeP3D(userId, amount) {
-        return await this.p3d.stakeTokens(userId, amount);
     }
 
     // Get user's P3D dashboard
@@ -302,7 +252,9 @@ class P3DGameManager {
             stakingRewards: stakingRewards,
             leaderboardPosition: leaderboardPosition,
             totalEarned: balance + stakingRewards,
-            referralCode: this.generateReferralCode(userId)
+            referralCode: this.generateReferralCode(userId),
+            network: '3DPass',
+            token: 'P3D'
         };
     }
 
@@ -311,6 +263,16 @@ class P3DGameManager {
         const position = leaderboard.findIndex(entry => entry.userId === userId);
         return position >= 0 ? position + 1 : null;
     }
+
+    generateReferralCode(userId) {
+        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+        this.referralCodes.set(code, {
+            userId: userId,
+            createdAt: new Date(),
+            uses: 0
+        });
+        return code;
+    }
 }
 
-module.exports = { P3DIntegration, P3DGameManager };
+module.exports = { P3DIntegration, P3DGameManager }; 
