@@ -21,7 +21,6 @@ class WebSocketManager {
                 isAlive: true
             });
             
-            // Setup heartbeat
             ws.isAlive = true;
             ws.on('pong', () => {
                 ws.isAlive = true;
@@ -35,38 +34,23 @@ class WebSocketManager {
                     this.handleMessage(playerId, message);
                 } catch (error) {
                     console.error('❌ Message parse error:', error);
-                    this.sendToPlayer(playerId, { 
-                        type: 'error', 
-                        message: 'Invalid message format' 
-                    });
+                    this.sendToPlayer(playerId, { type: 'error', message: 'Invalid format' });
                 }
             });
 
-            ws.on('close', () => {
-                console.log(`🔌 Player disconnected: ${playerId}`);
-                this.handleDisconnect(playerId);
-            });
-
+            ws.on('close', () => this.handleDisconnect(playerId));
             ws.on('error', (error) => {
                 console.error(`💥 WebSocket error for ${playerId}:`, error);
                 this.handleDisconnect(playerId);
             });
 
-            // Send connection confirmation
-            this.sendToPlayer(playerId, { 
-                type: 'connected', 
-                playerId,
-                timestamp: Date.now()
-            });
+            this.sendToPlayer(playerId, { type: 'connected', playerId, timestamp: Date.now() });
         });
 
-        // Heartbeat interval (30 seconds)
+        // Heartbeat every 30 seconds
         setInterval(() => {
             this.wss.clients.forEach((ws) => {
-                if (ws.isAlive === false) {
-                    console.log('💔 Terminating dead connection');
-                    return ws.terminate();
-                }
+                if (ws.isAlive === false) return ws.terminate();
                 ws.isAlive = false;
                 ws.ping();
             });
@@ -76,8 +60,6 @@ class WebSocketManager {
     handleMessage(playerId, message) {
         const player = this.players.get(playerId);
         if (!player) return;
-
-        console.log(`📨 Message from ${playerId}:`, message.type);
 
         switch (message.type) {
             case 'ping':
@@ -116,13 +98,11 @@ class WebSocketManager {
                     timestamp: Date.now()
                 });
                 break;
-            default:
-                console.warn(`⚠️ Unknown message type: ${message.type}`);
         }
     }
 
     createRoom(playerId) {
-        const roomId = uuidv4().substring(0, 6).toUpperCase(); // Shorter, readable ID
+        const roomId = uuidv4().substring(0, 6).toUpperCase();
         const room = {
             id: roomId,
             players: [playerId],
@@ -133,54 +113,28 @@ class WebSocketManager {
         };
         
         this.rooms.set(roomId, room);
-        
-        const player = this.players.get(playerId);
-        player.roomId = roomId;
-        
-        console.log(`🎮 Room created: ${roomId} by ${playerId}`);
+        this.players.get(playerId).roomId = roomId;
         
         this.sendToPlayer(playerId, {
             type: 'room_created',
             roomId: roomId,
             isHost: true
         });
-
-        return roomId;
     }
 
     joinRoom(playerId, roomId) {
         const room = this.rooms.get(roomId);
         if (!room) {
-            this.sendToPlayer(playerId, {
-                type: 'error',
-                message: 'Room not found'
-            });
-            return false;
+            return this.sendToPlayer(playerId, { type: 'error', message: 'Room not found' });
         }
         
         if (room.players.length >= room.maxPlayers) {
-            this.sendToPlayer(playerId, {
-                type: 'error',
-                message: 'Room is full'
-            });
-            return false;
-        }
-        
-        if (room.gameState !== 'waiting') {
-            this.sendToPlayer(playerId, {
-                type: 'error',
-                message: 'Game already in progress'
-            });
-            return false;
+            return this.sendToPlayer(playerId, { type: 'error', message: 'Room is full' });
         }
         
         room.players.push(playerId);
-        const player = this.players.get(playerId);
-        player.roomId = roomId;
+        this.players.get(playerId).roomId = roomId;
         
-        console.log(`🎯 Player ${playerId} joined room ${roomId}`);
-        
-        // Notify all players in room
         this.broadcastToRoom(roomId, {
             type: 'player_joined',
             playerId: playerId,
@@ -188,7 +142,6 @@ class WebSocketManager {
             timestamp: Date.now()
         });
         
-        // If room is now full, start game
         if (room.players.length === room.maxPlayers) {
             room.gameState = 'starting';
             this.broadcastToRoom(roomId, {
@@ -198,7 +151,6 @@ class WebSocketManager {
                 timestamp: Date.now()
             });
             
-            // Give clients 3 seconds to prepare
             setTimeout(() => {
                 room.gameState = 'active';
                 this.broadcastToRoom(roomId, {
@@ -209,8 +161,6 @@ class WebSocketManager {
                 });
             }, 3000);
         }
-        
-        return true;
     }
 
     leaveRoom(playerId) {
@@ -224,40 +174,18 @@ class WebSocketManager {
         room.players = room.players.filter(id => id !== playerId);
         player.roomId = null;
         
-        console.log(`🚪 Player ${playerId} left room ${roomId}`);
+        this.broadcastToRoom(roomId, {
+            type: 'player_left',
+            playerId: playerId,
+            room: this.getRoomInfo(roomId),
+            timestamp: Date.now()
+        });
         
         if (room.players.length === 0) {
-            // Room is empty, delete it
             this.rooms.delete(roomId);
-            console.log(`🗑️ Room ${roomId} deleted (empty)`);
-        } else {
-            // Notify remaining players
-            this.broadcastToRoom(roomId, {
-                type: 'player_left',
-                playerId: playerId,
-                room: this.getRoomInfo(roomId),
-                timestamp: Date.now()
-            });
-            
-            // Update host if host left
-            if (room.host === playerId && room.players.length > 0) {
-                room.host = room.players[0];
-                this.broadcastToRoom(roomId, {
-                    type: 'new_host',
-                    hostId: room.host,
-                    timestamp: Date.now()
-                });
-            }
-            
-            // If game was active, end it
-            if (room.gameState === 'active') {
-                room.gameState = 'ended';
-                this.broadcastToRoom(roomId, {
-                    type: 'game_ended',
-                    reason: 'player_left',
-                    timestamp: Date.now()
-                });
-            }
+        } else if (room.host === playerId) {
+            room.host = room.players[0];
+            this.broadcastToRoom(roomId, { type: 'new_host', hostId: room.host });
         }
     }
 
@@ -270,16 +198,14 @@ class WebSocketManager {
         const room = this.rooms.get(roomId);
         if (!room) return;
         
-        room.players.forEach(playerId => {
-            if (playerId !== excludePlayerId) {
-                this.sendToPlayer(playerId, message);
-            }
+        room.players.forEach(id => {
+            if (id !== excludePlayerId) this.sendToPlayer(id, message);
         });
     }
 
     sendToPlayer(playerId, message) {
         const player = this.players.get(playerId);
-        if (player && player.ws.readyState === 1) { // OPEN
+        if (player && player.ws.readyState === 1) {
             try {
                 player.ws.send(JSON.stringify(message));
             } catch (error) {
@@ -290,25 +216,20 @@ class WebSocketManager {
 
     getRoomInfo(roomId) {
         const room = this.rooms.get(roomId);
-        if (!room) return null;
-        
-        return {
+        return room ? {
             id: room.id,
             players: room.players.length,
             maxPlayers: room.maxPlayers,
             host: room.host,
-            gameState: room.gameState,
-            createdAt: room.createdAt
-        };
+            gameState: room.gameState
+        } : null;
     }
 
     getStats() {
         return {
             totalPlayers: this.players.size,
             totalRooms: this.rooms.size,
-            activeRooms: Array.from(this.rooms.values()).filter(room => 
-                room.gameState === 'active'
-            ).length
+            activeRooms: Array.from(this.rooms.values()).filter(r => r.gameState === 'active').length
         };
     }
 }
