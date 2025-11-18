@@ -25,12 +25,13 @@ const p3dManager = new P3DGameManager();
 p3dManager.initialize();
 
 // Add P3D commands to your bot
-bot.command('p3d', async (ctx) => {
+ bot.command('p3d', async (ctx) => {
     const userId = ctx.from.id;
     const dashboard = await p3dManager.getUserDashboard(userId);
     
     const message = `
-🎮 *3DPass Network - Gear Wars Integration*
+🎮 *3DPass Network - Gear Wars Integration* 
+*🔧 SIMULATION MODE*
 
 💰 *Your P3D Balance:* ${dashboard.balance.toFixed(6)} P3D
 🏆 *Leaderboard Position:* ${dashboard.leaderboardPosition || 'Not ranked'}
@@ -43,11 +44,12 @@ bot.command('p3d', async (ctx) => {
 • 🏆 Tournament victories
 • 👥 Referring friends
 
+*Note: Running in simulation mode. P3D balances are tracked locally.*
 *Use /p3d_stake to stake your P3D tokens!*
     `;
     
     ctx.reply(message, { parse_mode: 'Markdown' });
-});
+}); 
 
 bot.command('p3d_stake', (ctx) => {
     ctx.reply(
@@ -847,5 +849,6 @@ process.once('SIGTERM', () => {
 });
 
 module.exports = { bot, processBetGameResult };
+
 
 
