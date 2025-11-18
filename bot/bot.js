@@ -779,23 +779,98 @@ bot.command('help', (ctx) => {
 // SERVER SETUP
 // ========================================
 
-const server = http.createServer((req, res) => {
+ // Start server first
+const PORT = process.env.PORT || 10000;
+server.listen(PORT, '0.0.0.0', async () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📡 WebSocket server ready`);
+    console.log(`🤖 Starting Telegram bot...`);
+    
+    try {
+        // Use webhooks for production, polling for development
+        if (process.env.RENDER || process.env.NODE_ENV === 'production') {
+            const WEBHOOK_DOMAIN = process.env.WEBHOOK_DOMAIN || 'https://gear-wars.onrender.com';
+            const webhookPath = `/webhook/${process.env.BOT_TOKEN}`;
+            const webhookUrl = `${WEBHOOK_DOMAIN}${webhookPath}`;
+            
+            console.log('🔧 Setting up webhook mode...');
+            
+            // Delete any existing webhook first
+            await bot.telegram.deleteWebhook({ drop_pending_updates: true });
+            console.log('🧹 Cleared existing webhook');
+            
+            // Set new webhook
+            await bot.telegram.setWebhook(webhookUrl);
+            console.log(`✅ Webhook set to: ${WEBHOOK_DOMAIN}/webhook/***`);
+            
+            console.log('✅ Telegram bot started with WEBHOOKS!');
+        } else {
+            // Development mode - use polling
+            console.log('🔧 Setting up polling mode (development)...');
+            await bot.launch();
+            console.log('✅ Telegram bot started with POLLING!');
+        }
+        
+        console.log('🎮 Gear Wars is now LIVE!');
+        
+    } catch (err) {
+        console.error('❌ Failed to start bot:', err);
+        
+        // If webhook fails, try polling as fallback
+        if (process.env.RENDER || process.env.NODE_ENV === 'production') {
+            console.log('🔄 Webhook failed, attempting polling fallback...');
+            try {
+                await bot.launch();
+                console.log('✅ Bot started in polling mode (fallback)');
+            } catch (pollingErr) {
+                console.error('❌ Polling also failed:', pollingErr);
+                // Don't exit - keep server running for WebSocket
+                console.log('🌐 WebSocket server remains active');
+            }
+        } else {
+            process.exit(1);
+        }
+    }
+});
+
+// Webhook endpoint handler - ADD THIS TO YOUR EXISTING SERVER
+const originalServer = http.createServer((req, res) => {
+    // Webhook endpoint
+    if (req.url.startsWith('/webhook/') && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk.toString());
+        req.on('end', async () => {
+            try {
+                const update = JSON.parse(body);
+                await bot.handleUpdate(update);
+                res.writeHead(200);
+                res.end('OK');
+            } catch (error) {
+                console.error('Webhook error:', error);
+                res.writeHead(500);
+                res.end('Error');
+            }
+        });
+        return;
+    }
+    
     // Health check endpoint
     if (req.url === '/health' || req.url === '/') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
             status: 'online',
             bot: 'running',
-            websocket: wsManager.getStats(),
+            mode: (process.env.RENDER || process.env.NODE_ENV === 'production') ? 'webhook' : 'polling',
+            websocket: wsManager ? wsManager.getStats() : { totalPlayers: 0, totalRooms: 0 },
             timestamp: Date.now()
         }));
     } else if (req.url === '/stats') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({
-            users: Object.keys(data.users).length,
-            activeBets: data.bets.filter(b => b.status === 'open').length,
-            totalGames: data.statistics.totalGames || 0,
-            websocket: wsManager.getStats()
+            users: Object.keys(data.users || {}).length,
+            activeBets: (data.bets || []).filter(b => b.status === 'open').length,
+            totalGames: (data.statistics || {}).totalGames || 0,
+            websocket: wsManager ? wsManager.getStats() : { totalPlayers: 0, totalRooms: 0 }
         }));
     } else {
         res.writeHead(404);
@@ -803,52 +878,46 @@ const server = http.createServer((req, res) => {
     }
 });
 
-// Handle WebSocket upgrades
+// Handle WebSocket upgrades on the same server
 server.on('upgrade', (request, socket, head) => {
-    wsManager.wss.handleUpgrade(request, socket, head, (ws) => {
-        wsManager.wss.emit('connection', ws, request);
-    });
-});
-
-// Start server
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📡 WebSocket server ready`);
-    console.log(`🤖 Starting Telegram bot...`);
-    
-    // Start bot
-    bot.launch()
-        .then(() => {
-            console.log('✅ Telegram bot started successfully!');
-            console.log('🎮 Gear Wars is now LIVE!');
-        })
-        .catch(err => {
-            console.error('❌ Failed to start bot:', err);
-            process.exit(1);
+    if (wsManager && wsManager.wss) {
+        wsManager.wss.handleUpgrade(request, socket, head, (ws) => {
+            wsManager.wss.emit('connection', ws, request);
         });
+    } else {
+        socket.destroy();
+    }
 });
 
 // Graceful shutdown
-process.once('SIGINT', () => {
-    console.log('🛑 Shutting down gracefully...');
-    bot.stop('SIGINT');
+process.once('SIGINT', async () => {
+    console.log('🛑 Shutting down gracefully (SIGINT)...');
+    try {
+        if (process.env.RENDER || process.env.NODE_ENV === 'production') {
+            await bot.telegram.deleteWebhook();
+        }
+        bot.stop('SIGINT');
+    } catch (error) {
+        console.error('Error during shutdown:', error);
+    }
     server.close(() => {
         console.log('✅ Server closed');
         process.exit(0);
     });
 });
 
-process.once('SIGTERM', () => {
-    console.log('🛑 Shutting down gracefully...');
-    bot.stop('SIGTERM');
+process.once('SIGTERM', async () => {
+    console.log('🛑 Shutting down gracefully (SIGTERM)...');
+    try {
+        if (process.env.RENDER || process.env.NODE_ENV === 'production') {
+            await bot.telegram.deleteWebhook();
+        }
+        bot.stop('SIGTERM');
+    } catch (error) {
+        console.error('Error during shutdown:', error);
+    }
     server.close(() => {
         console.log('✅ Server closed');
         process.exit(0);
     });
-});
-
-module.exports = { bot, processBetGameResult };
-
-
-
+}); 
