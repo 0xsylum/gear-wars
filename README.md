@@ -40,37 +40,49 @@ A feature-rich Telegram Mini App battle game with real-time multiplayer, betting
 - **Leaderboard** with rankings
 - **Color customization**
 - **Win streaks** and special rewards
+ # 🎮 Gear Wars - P3D Network Integration
 
-## 🛠️ Tech Stack
+## 🌟 P3D Features Integrated
 
-### Backend
-- **Node.js** + **Express** server
-- **Telegraf** for Telegram Bot API
-- **WebSocket** for real-time communication
-- **JSON file storage** (easily upgradable to database)
+### 💰 **P3D Rewards System**
+- **Win Battles**: Earn P3D for victories
+- **Place Bets**: Get P3D for betting activity  
+- **Tournaments**: Major P3D prizes for tournament wins
+- **Referrals**: P3D bonuses for inviting friends
+- **Daily Bonuses**: Consistent P3D earnings
 
-### Frontend
-- **HTML5 Canvas** for game rendering
-- **CSS3** with responsive design
-- **Vanilla JavaScript** for game logic
-- **Mobile-optimized** touch controls
+### 🏆 **P3D Leaderboard**
+- Real-time P3D balance rankings
+- Monthly P3D prize pools for top players
+- Special P3D achievements and badges
 
-### Deployment
-- **Render** for bot backend
-- **Vercel** for frontend hosting
-- **WebSocket support** with proper scaling
+### 📈 **P3D Staking**
+- **15% APR** staking rewards
+- Flexible staking amounts
+- Compound interest system
 
-## 📦 Installation
+## 🚀 Getting Started for P3D Community
 
-### Prerequisites
-- Node.js 16+
-- Telegram Bot Token from [@BotFather](https://t.me/BotFather)
+### **For Players:**
+1. **Start Playing** - Earn P3D from every game
+2. **Check Balance** - Use `/p3d` command
+3. **Stake Tokens** - Use `/p3d_stake` command
+4. **Climb Leaderboard** - Use `/p3d_leaderboard`
 
-### Local Development
+### **For Developers:**
+The codebase is now P3D-ready with:
+- Full Web3 integration structure
+- Smart contract interfaces
+- Reward distribution system
+- Staking mechanics
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/0xsylum/gear-wars.git
-   cd gear-wars
+## 🔧 Technical Integration
 
-   
+### **Smart Contract Ready**
+```javascript
+// P3D contract integration
+const p3dManager = new P3DGameManager();
+await p3dManager.initialize();
+
+// Award tokens for game actions
+await p3dManager.handleGameResult(userId, gameData);
