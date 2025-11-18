@@ -3,6 +3,9 @@
   "version": "2.1.0",
   "description": "Telegram battle arena with P3D Network integration",
   "main": "bot.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "start": "node bot.js",
     "dev": "node bot.js",
@@ -32,10 +35,3 @@
   "author": "0xsylum",
   "license": "MIT"
 }
-
- {
-  "scripts": {
-    "start": "node bot.js",
-    "dev": "NODE_ENV=development node bot.js"
-  }
-} 
