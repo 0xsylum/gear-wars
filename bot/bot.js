@@ -1,3 +1,4 @@
+const http = require('http');
 const { Telegraf } = require('telegraf');
 const fs = require('fs');
 const http = require('http');
@@ -779,7 +780,63 @@ bot.command('help', (ctx) => {
 // SERVER SETUP
 // ========================================
 
- // Start server first
+ // ========================================
+// SERVER SETUP & STARTUP
+// ========================================
+
+// Create HTTP server (this was missing!)
+const server = http.createServer((req, res) => {
+    // Webhook endpoint for Telegram
+    if (req.url.startsWith('/webhook/') && req.method === 'POST') {
+        let body = '';
+        req.on('data', chunk => body += chunk.toString());
+        req.on('end', async () => {
+            try {
+                const update = JSON.parse(body);
+                await bot.handleUpdate(update);
+                res.writeHead(200);
+                res.end('OK');
+            } catch (error) {
+                console.error('Webhook error:', error);
+                res.writeHead(500);
+                res.end('Error');
+            }
+        });
+        return;
+    }
+    
+    // Health check endpoint
+    if (req.url === '/health' || req.url === '/') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+            status: 'online',
+            bot: 'running',
+            mode: (process.env.RENDER || process.env.NODE_ENV === 'production') ? 'webhook' : 'polling',
+            websocket: wsManager.getStats(),
+            timestamp: Date.now()
+        }));
+    } else if (req.url === '/stats') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({
+            users: Object.keys(data.users).length,
+            activeBets: data.bets.filter(b => b.status === 'open').length,
+            totalGames: data.statistics.totalGames || 0,
+            websocket: wsManager.getStats()
+        }));
+    } else {
+        res.writeHead(404);
+        res.end('Not found');
+    }
+});
+
+// Handle WebSocket upgrades
+server.on('upgrade', (request, socket, head) => {
+    wsManager.wss.handleUpgrade(request, socket, head, (ws) => {
+        wsManager.wss.emit('connection', ws, request);
+    });
+});
+
+// Start server
 const PORT = process.env.PORT || 10000;
 server.listen(PORT, '0.0.0.0', async () => {
     console.log(`🚀 Server running on port ${PORT}`);
@@ -830,62 +887,6 @@ server.listen(PORT, '0.0.0.0', async () => {
         } else {
             process.exit(1);
         }
-    }
-});
-
-// Webhook endpoint handler - ADD THIS TO YOUR EXISTING SERVER
-const originalServer = http.createServer((req, res) => {
-    // Webhook endpoint
-    if (req.url.startsWith('/webhook/') && req.method === 'POST') {
-        let body = '';
-        req.on('data', chunk => body += chunk.toString());
-        req.on('end', async () => {
-            try {
-                const update = JSON.parse(body);
-                await bot.handleUpdate(update);
-                res.writeHead(200);
-                res.end('OK');
-            } catch (error) {
-                console.error('Webhook error:', error);
-                res.writeHead(500);
-                res.end('Error');
-            }
-        });
-        return;
-    }
-    
-    // Health check endpoint
-    if (req.url === '/health' || req.url === '/') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-            status: 'online',
-            bot: 'running',
-            mode: (process.env.RENDER || process.env.NODE_ENV === 'production') ? 'webhook' : 'polling',
-            websocket: wsManager ? wsManager.getStats() : { totalPlayers: 0, totalRooms: 0 },
-            timestamp: Date.now()
-        }));
-    } else if (req.url === '/stats') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({
-            users: Object.keys(data.users || {}).length,
-            activeBets: (data.bets || []).filter(b => b.status === 'open').length,
-            totalGames: (data.statistics || {}).totalGames || 0,
-            websocket: wsManager ? wsManager.getStats() : { totalPlayers: 0, totalRooms: 0 }
-        }));
-    } else {
-        res.writeHead(404);
-        res.end('Not found');
-    }
-});
-
-// Handle WebSocket upgrades on the same server
-server.on('upgrade', (request, socket, head) => {
-    if (wsManager && wsManager.wss) {
-        wsManager.wss.handleUpgrade(request, socket, head, (ws) => {
-            wsManager.wss.emit('connection', ws, request);
-        });
-    } else {
-        socket.destroy();
     }
 });
 
