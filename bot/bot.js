@@ -15,7 +15,93 @@ let data = {
     bets: [],
     leaderboard: {}
 };
+ const { P3DGameManager } = require('./p3d-integration');
+const p3dManager = new P3DGameManager();
 
+// Initialize P3D
+p3dManager.initialize();
+
+// Add P3D commands to your bot
+bot.command('p3d', async (ctx) => {
+    const userId = ctx.from.id;
+    const dashboard = await p3dManager.getUserDashboard(userId);
+    
+    const message = `
+🎮 *P3D Network - Gear Wars Integration*
+
+💰 *Your P3D Balance:* ${dashboard.balance.toFixed(2)} P3D
+🏆 *Leaderboard Position:* ${dashboard.leaderboardPosition || 'Not ranked'}
+📈 *Staking Rewards:* ${dashboard.stakingRewards.toFixed(2)} P3D
+👥 *Referral Code:* \`${dashboard.referralCode}\`
+
+*Earn P3D by:*
+• 🎯 Winning battles
+• 💰 Placing bets  
+• 🏆 Tournament victories
+• 👥 Referring friends
+
+*Use /p3d_stake to stake your P3D tokens!*
+    `;
+    
+    ctx.reply(message, { parse_mode: 'Markdown' });
+});
+
+bot.command('p3d_stake', (ctx) => {
+    ctx.reply(
+        '💰 *P3D Staking*\n\nStake your P3D tokens to earn 15% APR rewards!\n\n' +
+        'Available staking amounts:\n' +
+        '• 10 P3D\n• 50 P3D  \n• 100 P3D\n• 500 P3D\n\n' +
+        'Use: `/stake_amount 50` to stake 50 P3D',
+        { parse_mode: 'Markdown' }
+    );
+});
+
+bot.command('p3d_leaderboard', (ctx) => {
+    const leaderboard = p3dManager.p3d.getP3DLeaderboard();
+    
+    let leaderboardText = '🏆 *P3D Leaderboard*\n\n';
+    leaderboard.forEach((entry, index) => {
+        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`;
+        leaderboardText += `${medal} ${entry.balance.toFixed(1)} P3D\n`;
+    });
+    
+    ctx.reply(leaderboardText, { parse_mode: 'Markdown' });
+});
+
+// Enhanced game result handling with P3D
+bot.on('web_app_data', async (ctx) => {
+    try {
+        const result = JSON.parse(ctx.webAppData.data.json());
+        const userId = ctx.from.id;
+        
+        if (result.type === 'game_result') {
+            // Handle P3D rewards
+            const p3dResult = await p3dManager.handleGameResult(userId, {
+                won: result.winner === 'player',
+                winStreak: result.winStreak || 0,
+                gameType: result.gameType || 'quick_battle'
+            });
+            
+            let replyMessage = '';
+            if (result.winner === 'player') {
+                replyMessage = `🎉 Victory! +50 coins\n`;
+            } else {
+                replyMessage = `💔 Defeat! Better luck next time\n`;
+            }
+            
+            // Add P3D rewards info
+            if (p3dResult.totalAwarded > 0) {
+                replyMessage += `💰 *P3D Rewards:* +${p3dResult.totalAwarded.toFixed(2)} P3D\n`;
+            }
+            
+            replyMessage += `\nUse /p3d to check your P3D balance!`;
+            
+            ctx.reply(replyMessage, { parse_mode: 'Markdown' });
+        }
+    } catch (error) {
+        console.error('P3D game result error:', error);
+    }
+}); 
 // Load/save data with error handling
 function loadData() {
     try {
@@ -758,3 +844,4 @@ process.once('SIGTERM', () => {
 });
 
 module.exports = { bot, processBetGameResult };
+
