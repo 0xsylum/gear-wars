@@ -32,3 +32,10 @@
   "author": "0xsylum",
   "license": "MIT"
 }
+
+ {
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "NODE_ENV=development node bot.js"
+  }
+} 
