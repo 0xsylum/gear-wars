@@ -1,22 +1,11 @@
-const { ethers } = require('ethers');
 const axios = require('axios');
 
 class P3DIntegration {
     constructor() {
-        // Try multiple RPC endpoints for 3DPass
-        this.rpcEndpoints = [
-            'https://rpc.3dpass.org',
-            'https://rpc.3dpass.org:8545',
-            'https://mainnet.3dpass.org'
-        ];
-        
-        this.currentRpcIndex = 0;
+        // DISABLE RPC completely for now - use simulation mode only
         this.provider = null;
+        this.isEnabled = false; // Force simulation mode
         
-        // Bridged P3D on Ethereum (more reliable)
-        this.p3dContractAddress = '0x4f3a4e37701402C61146071309e45A15843025E1';
-        
-        this.isEnabled = false;
         this.stakingPool = new Map();
         this.rewardRates = {
             win: 0.1,
@@ -25,54 +14,23 @@ class P3DIntegration {
             referral: 0.2,
             participation: 0.01
         };
+        
+        console.log('🎮 3DPass integration: SIMULATION MODE ONLY');
     }
 
     async initialize() {
-        console.log('🔗 Testing 3DPass network connections...');
+        // Skip RPC connection attempts completely
+        console.log('🔗 Skipping 3DPass RPC connection (simulation mode)');
+        console.log('💰 P3D rewards will be tracked locally');
+        console.log('🎯 All P3D transactions are simulated');
         
-        // Try to connect to any available RPC
-        for (let i = 0; i < this.rpcEndpoints.length; i++) {
-            try {
-                this.provider = new ethers.JsonRpcProvider(this.rpcEndpoints[i]);
-                
-                // Set a timeout for connection attempts
-                const timeoutPromise = new Promise((_, reject) => 
-                    setTimeout(() => reject(new Error('Connection timeout')), 5000)
-                );
-                
-                const blockPromise = this.provider.getBlockNumber();
-                const blockNumber = await Promise.race([blockPromise, timeoutPromise]);
-                
-                console.log(`✅ Connected to 3DPass network via ${this.rpcEndpoints[i]}`);
-                console.log(`📦 Current block: ${blockNumber}`);
-                
-                this.isEnabled = true;
-                this.currentRpcIndex = i;
-                break;
-                
-            } catch (error) {
-                console.log(`❌ Failed to connect to ${this.rpcEndpoints[i]}: ${error.message}`);
-                
-                if (i === this.rpcEndpoints.length - 1) {
-                    // All endpoints failed
-                    console.log('⚠️ All 3DPass RPC endpoints failed, running in simulation mode');
-                    console.log('💡 P3D rewards will be tracked locally for testing');
-                    this.isEnabled = false;
-                }
-            }
-        }
-
-        if (!this.isEnabled) {
-            console.log('🎮 3DPass integration running in SIMULATION MODE');
-            console.log('💰 P3D rewards are tracked locally for demonstration');
-        }
-
-        return this.isEnabled;
+        this.isEnabled = false; // Ensure simulation mode
+        
+        return true; // Always succeed in simulation mode
     }
 
     // Award P3D tokens for game achievements
     async awardTokens(userId, action, amount = null) {
-        // Always use simulation mode for now since RPC is not accessible
         return this.simulateAward(userId, action, amount);
     }
 
@@ -82,9 +40,10 @@ class P3DIntegration {
         // Track in local storage for simulation
         if (!global.p3dSimulation) global.p3dSimulation = new Map();
         const userBalance = global.p3dSimulation.get(userId) || 0;
-        global.p3dSimulation.set(userId, userBalance + rewardAmount);
+        const newBalance = userBalance + rewardAmount;
+        global.p3dSimulation.set(userId, newBalance);
         
-        console.log(`🎯 [SIM] Awarded ${rewardAmount} P3D to ${userId} for ${action}`);
+        console.log(`🎯 [SIM] Awarded ${rewardAmount} P3D to ${userId} for ${action} | New balance: ${newBalance} P3D`);
         
         return {
             success: true,
@@ -92,7 +51,7 @@ class P3DIntegration {
             action: action,
             token: 'P3D',
             simulated: true,
-            balance: userBalance + rewardAmount,
+            balance: newBalance,
             message: 'P3D awarded in simulation mode'
         };
     }
@@ -112,14 +71,14 @@ class P3DIntegration {
             const stake = this.stakingPool.get(userId);
             stake.amount += amount;
             
-            console.log(`💰 ${userId} staked ${amount} P3D (simulation)`);
+            console.log(`💰 ${userId} staked ${amount} P3D (simulation) | Total staked: ${stake.amount} P3D`);
             
             return {
                 success: true,
                 stakedAmount: stake.amount,
                 token: 'P3D',
                 simulated: true,
-                message: 'Staking in simulation mode - real P3D will be available when RPC is connected'
+                message: 'Staking in simulation mode'
             };
         } catch (error) {
             console.error('❌ Staking failed:', error);
@@ -142,7 +101,6 @@ class P3DIntegration {
 
     // Get user P3D balance
     async getBalance(userId) {
-        // Always return simulation balance since RPC is not accessible
         return global.p3dSimulation?.get(userId) || 0;
     }
 
@@ -150,21 +108,22 @@ class P3DIntegration {
     getP3DLeaderboard() {
         if (!global.p3dSimulation) return [];
         
-        return Array.from(global.p3dSimulation.entries())
+        const leaderboard = Array.from(global.p3dSimulation.entries())
             .map(([userId, balance]) => ({ userId, balance }))
             .sort((a, b) => b.balance - a.balance)
             .slice(0, 10);
+        
+        console.log(`🏆 P3D Leaderboard: ${leaderboard.length} players`);
+        return leaderboard;
     }
 
     // Get network status
     getNetworkStatus() {
         return {
-            connected: this.isEnabled,
-            mode: this.isEnabled ? 'LIVE' : 'SIMULATION',
-            currentRpc: this.isEnabled ? this.rpcEndpoints[this.currentRpcIndex] : 'None',
-            message: this.isEnabled ? 
-                'Connected to 3DPass network' : 
-                'Running in simulation mode - P3D rewards tracked locally'
+            connected: false,
+            mode: 'SIMULATION',
+            currentRpc: 'None',
+            message: 'Running in simulation mode - P3D rewards tracked locally'
         };
     }
 }
@@ -178,14 +137,12 @@ class P3DGameManager {
 
     async initialize() {
         await this.p3d.initialize();
-        const status = this.p3d.getNetworkStatus();
-        console.log(`🎮 3DPass Game Manager initialized - Mode: ${status.mode}`);
+        console.log('🎮 3DPass Game Manager initialized in SIMULATION MODE');
     }
 
     // Enhanced game result handler with P3D rewards
     async handleGameResult(userId, gameData) {
         const rewards = [];
-        const networkStatus = this.p3d.getNetworkStatus();
         
         if (gameData.won) {
             const winReward = await this.p3d.awardTokens(userId, 'win');
@@ -208,13 +165,16 @@ class P3DGameManager {
         );
         rewards.push(participationReward);
         
+        const totalAwarded = rewards.reduce((sum, r) => sum + r.amount, 0);
+        console.log(`🎮 Game result for ${userId}: ${totalAwarded} P3D awarded`);
+        
         return {
             gameResult: gameData,
             p3dRewards: rewards,
-            totalAwarded: rewards.reduce((sum, r) => sum + r.amount, 0),
+            totalAwarded: totalAwarded,
             token: 'P3D',
-            networkMode: networkStatus.mode,
-            message: networkStatus.message
+            networkMode: 'SIMULATION',
+            message: 'P3D rewards tracked in simulation mode'
         };
     }
 
@@ -223,7 +183,8 @@ class P3DGameManager {
         const balance = await this.p3d.getBalance(userId);
         const stakingRewards = this.p3d.calculateStakingRewards(userId);
         const leaderboardPosition = this.getLeaderboardPosition(userId);
-        const networkStatus = this.p3d.getNetworkStatus();
+        
+        console.log(`📊 P3D Dashboard for ${userId}: ${balance} P3D balance`);
         
         return {
             balance: balance,
@@ -233,8 +194,8 @@ class P3DGameManager {
             referralCode: this.generateReferralCode(userId),
             network: '3DPass',
             token: 'P3D',
-            networkMode: networkStatus.mode,
-            message: networkStatus.message
+            networkMode: 'SIMULATION',
+            message: 'Running in simulation mode - P3D tracked locally'
         };
     }
 
@@ -251,7 +212,22 @@ class P3DGameManager {
             createdAt: new Date(),
             uses: 0
         });
+        console.log(`👥 Generated referral code for ${userId}: ${code}`);
         return code;
+    }
+
+    // Get simulation statistics
+    getSimulationStats() {
+        if (!global.p3dSimulation) return { totalUsers: 0, totalP3D: 0 };
+        
+        const totalUsers = global.p3dSimulation.size;
+        const totalP3D = Array.from(global.p3dSimulation.values()).reduce((sum, balance) => sum + balance, 0);
+        
+        return {
+            totalUsers: totalUsers,
+            totalP3D: totalP3D,
+            averageP3D: totalUsers > 0 ? totalP3D / totalUsers : 0
+        };
     }
 }
 
